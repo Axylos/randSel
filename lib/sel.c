@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include "randSel.h"
+#include "testPart.h"
 
 int TARG = 30;
 
@@ -11,8 +13,7 @@ int gen_rand(int max_num) {
     return rando;
 }
 
-void yates_shuf(int data[], int length) 
-{
+void yates_shuf(int data[], int length) {
     if (length < 2) {
         return;
     } else {
@@ -38,6 +39,7 @@ int comp(const void * elem1, const void * elem2) {
 }
 
 int main(int ARGC, char *ARGV[]) {
+    testPart();
 
     int seed, targ;
     srand (time(NULL));
@@ -48,9 +50,9 @@ int main(int ARGC, char *ARGV[]) {
         int tmp = gen_rand(100);
         data[i] = tmp;
     }
+    printf("base data: %d %d %d\n", data[TARG - 1], data[TARG], data[TARG + 1]);
 
     targ = data[TARG];
-    printf("%d\n", targ);
     yates_shuf(data, 50);
 
     int i = 0;
@@ -68,8 +70,8 @@ int main(int ARGC, char *ARGV[]) {
 
     int sorted_targ = data[TARG];
     int proposed_targ = randSel(TARG, data, sizeof(data) / sizeof(data[0]));
-    printf("%d %d\n", sorted_targ, proposed_targ);
 
-    assert(data[TARG] == proposed_targ);
+    printf("the set targ is %d and the test targ is %d\n", targ, proposed_targ);
+    assert(targ == proposed_targ);
     return 0;
 }
