@@ -1,1 +1,1 @@
-void testPart();
+void testPart(void);

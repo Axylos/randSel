@@ -27,24 +27,24 @@ void parr(int arr[], int length) {
 
 
 
-int partition(int arr[], int start, int length, int pivot) {
-    assert(*arr > 0);
-    assert(*(arr + pivot) > 0);
-    swap(arr + start, arr + start + pivot);
+int partition(int arr[], int start, int end, int pivot) {
+    assert(*arr >= 0);
+    assert(*(arr + pivot) >= 0);
+    swap(arr + start, arr + pivot);
 
     int i = start;
     int k = start + 1;
 
-    while (k < length) {
+    while (k <= end)  {
        if (arr[k] < arr[i]) {
-           swap(arr + start + k, arr + start + i + 1);
-           swap(arr + start + i + 1, arr + start + i);
+           swap(arr + k, arr + i + 1);
+           swap(arr + i + 1, arr + i);
            i++;
        }
        k++;
     }
 
-    return i - 1;
+    return i;
 }
 
 int randSel(int target, int arr[], int length) {
@@ -53,27 +53,35 @@ int randSel(int target, int arr[], int length) {
     int pivot, new_pivot;
     int offset = 0;
     bool done = false;
+    int end = length - 1;
 
 
     new_pivot = rand() % length;
-    pivot = partition(arr, 0, length, new_pivot);
-    printf("%d\n", pivot);
+    pivot = partition(arr, offset, end, new_pivot);
     while (done == false) {
-
-        if (pivot == target + 1) {
+        if (pivot == target) {
             done = true;
         } else if (pivot > target) {
-            length = pivot - offset + 1;
-            new_pivot = rand() % length;
-            pivot = partition(arr, offset, length, new_pivot);
+            end = pivot - 1;
+
+            length = end - offset + 1;
+            new_pivot = rand() % (length);
+            new_pivot += offset;
+
+            pivot = partition(arr, offset, end, new_pivot);
         } else {
-            length = 50 - offset;
-            new_pivot = rand() % length;
-            pivot = partition(arr, offset, length, new_pivot);
+
+            offset = pivot + 1;
+            length = end - offset + 1;
+            new_pivot = rand() % (length);
+            new_pivot += offset;
+
+            pivot = partition(arr, offset, end, new_pivot);
         }
     }
 
-    return arr[pivot + offset] - 1;
+
+    return arr[pivot];
 
 }
 

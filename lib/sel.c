@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include <time.h>
 #include "randSel.h"
-#include "testPart.h"
 
-int TARG = 30;
+unsigned long TARG = 300;
+unsigned long RAW_DATA_LENGTH = 1000;
+unsigned long INPUT_DATA_LENGTH = 500;
 
 int gen_rand(int max_num) {
     long rando = rand() % max_num;
@@ -14,10 +15,11 @@ int gen_rand(int max_num) {
 }
 
 void yates_shuf(int data[], int length) {
+    srand(time(NULL));
     if (length < 2) {
         return;
     } else {
-        int swapper = gen_rand(length);
+        int swapper = rand() % length;
         int tmp = data[0];
         data[0] = data[swapper];
         data[swapper] = tmp;
@@ -39,39 +41,60 @@ int comp(const void * elem1, const void * elem2) {
 }
 
 int main(int ARGC, char *ARGV[]) {
-    testPart();
-
-    int seed, targ;
-    srand (time(NULL));
-
-    int data[50], sorted_data[50];
-
-    for (int i = 0; i < 50; i++) {
-        int tmp = gen_rand(100);
-        data[i] = tmp;
+    int c = 1;
+    while (c < ARGC) {
+        switch (c)
+        {
+            case 1:
+                RAW_DATA_LENGTH = strtoul(ARGV[c], NULL, 10);
+                break;
+            case 2:
+                INPUT_DATA_LENGTH = strtoul(ARGV[c], NULL, 10);
+                break;
+            case 3:
+                TARG = strtoul(ARGV[c], NULL, 10);
+                break;
+            default:
+                abort();
+        }
+        c++;
     }
-    printf("base data: %d %d %d\n", data[TARG - 1], data[TARG], data[TARG + 1]);
 
-    targ = data[TARG];
-    yates_shuf(data, 50);
+        assert(RAW_DATA_LENGTH > INPUT_DATA_LENGTH);
+        assert(TARG < INPUT_DATA_LENGTH);
+
+
+
+
+    int targ;
+
+    int data[RAW_DATA_LENGTH], sorted_data[INPUT_DATA_LENGTH];
+    int input_data[INPUT_DATA_LENGTH];
+
+    for (int i = 0; i < RAW_DATA_LENGTH; i++) {
+        data[i] = i;
+    }
+
+    yates_shuf(data, RAW_DATA_LENGTH);
 
     int i = 0;
-    for (int i = 0; i < sizeof(data) / sizeof(int); i++) {
-        sorted_data[i] = data[i];
+    for (i = 0; i < INPUT_DATA_LENGTH; i++) {
+        input_data[i] = data[i];
     }
 
-    qsort(sorted_data, (sizeof(data) / sizeof(*data)), sizeof(*data), comp);
-
-    /*
-    for (int j = 0; j < 20; j++ ) {
-        printf("%d\n", sorted_data[j]);
+    for (int i = 0; i < sizeof(input_data) / sizeof(int); i++) {
+        sorted_data[i] = input_data[i];
     }
-    */
 
-    int sorted_targ = data[TARG];
-    int proposed_targ = randSel(TARG, data, sizeof(data) / sizeof(data[0]));
 
-    printf("the set targ is %d and the test targ is %d\n", targ, proposed_targ);
+    qsort(sorted_data, (sizeof(sorted_data) / sizeof(*sorted_data)), sizeof(*sorted_data), comp);
+    targ = sorted_data[TARG];
+
+    int sorted_targ = sorted_data[TARG];
+    int proposed_targ = randSel(TARG, input_data, sizeof(input_data) / sizeof(input_data[0]));
+
+    printf("the set targ is %d and the test targ is %d\n\n", targ, proposed_targ);
     assert(targ == proposed_targ);
+    printf("YOU WIN!!!\n\n\n");
     return 0;
 }

@@ -1,5 +1,5 @@
+#include "../include/randSel.h"
 #include "testPart.h"
-#include "randSel.h"
 #include <assert.h>
 
 void testPart() {
@@ -30,4 +30,7 @@ void testPart() {
 
     assert (z > i);
     assert(j > i);
+    assert(pivot == 2);
+
+    printf("done\n");
 }

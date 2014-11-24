@@ -4,17 +4,27 @@ CC=gcc
 CFLAGS=-I$(IDIR) -g -std=$(VERSION)
 
 ODIR=obj
+TDIR=tests
 LDIR=../lib
 
-LIBS=-lm
+LIBS=
 
-_DEPS = randSel.h testPart.h
+_DEPS = randSel.h 
 DEPS = $(patsbust %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = randSel.o sel.o testPart.o
+_T_DEPS = testPart.h 
+T_DEPS = $(patsbust %,$(IDIR)/%,$(_T_DEPS))
+
+_OBJ = randSel.o sel.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
+_TEST_OBJ = randSel.o testPart.o test.o
+TEST_OBJ = $(patsubst %,$(TDIR)/%,$(_TEST_OBJ))
+
 $(ODIR)/%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+$(TDIR)/%.o: %.c $(DEPS) $(T_DEPS) 
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 sel: $(OBJ)
@@ -22,7 +32,8 @@ sel: $(OBJ)
 
 .PHONY: clean
 
-test: $(OBJ)
-	gcc test.c -o test $(CFLAGS) $(LIBS)
+test: $(TEST_OBJ)
+	make sel
+	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
+	rm -f $(ODIR)/*.o $(TDIR)/*.o *~ core $(INCDIR)/*~
